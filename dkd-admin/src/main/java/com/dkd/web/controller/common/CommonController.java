@@ -86,12 +86,6 @@ public class CommonController
     {
         try
         {
-            //// 上传文件路径
-            //String filePath = RuoYiConfig.getUploadPath();
-            //// 上传并返回新文件名称
-            //String fileName = FileUploadUtils.upload(filePath, file);
-            //String url = serverConfig.getUrl() + fileName;
-
             // 指定oss文件保存路径，2024/10/15/文件名
             String fileName = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")) + "/";
             FileInfo fileInfo = fileStorageService.of(file)
