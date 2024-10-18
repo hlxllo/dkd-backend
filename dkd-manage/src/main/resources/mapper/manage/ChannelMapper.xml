@@ -17,6 +17,21 @@
         <result property="updateTime" column="update_time"/>
     </resultMap>
 
+    <resultMap type="ChannelVo" id="ChannelVoResult">
+        <result property="id" column="id"/>
+        <result property="channelCode" column="channel_code"/>
+        <result property="skuId" column="sku_id"/>
+        <result property="vmId" column="vm_id"/>
+        <result property="innerCode" column="inner_code"/>
+        <result property="maxCapacity" column="max_capacity"/>
+        <result property="currentCapacity" column="current_capacity"/>
+        <result property="lastSupplyTime" column="last_supply_time"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <association property="sku" javaType="Sku" column="sku_id"
+                     select="com.dkd.manage.mapper.SkuMapper.selectSkuBySkuId"/>
+    </resultMap>
+
     <sql id="selectChannelVo">
         select id,
                channel_code,
@@ -55,6 +70,12 @@
         </foreach>
     </select>
 
+    <select id="selectChannelVoListByInnerCode" resultMap="ChannelVoResult"
+            parameterType="java.lang.String">
+        <include refid="selectChannelVo"/>
+        where inner_code = #{innerCode}
+    </select>
+
     <insert id="insertChannel" parameterType="Channel" useGeneratedKeys="true" keyProperty="id">
         insert into tb_channel
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -67,7 +88,7 @@
             <if test="lastSupplyTime != null">last_supply_time,</if>
             <if test="createTime != null">create_time,</if>
             <if test="updateTime != null">update_time,</if>
-         </trim>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="channelCode != null and channelCode != ''">#{channelCode},</if>
             <if test="skuId != null">#{skuId},</if>
@@ -78,7 +99,7 @@
             <if test="lastSupplyTime != null">#{lastSupplyTime},</if>
             <if test="createTime != null">#{createTime},</if>
             <if test="updateTime != null">#{updateTime},</if>
-         </trim>
+        </trim>
     </insert>
 
     <insert id="batchInsertChannels" parameterType="java.util.List">
@@ -108,6 +129,24 @@
         </trim>
         where id = #{id}
     </update>
+
+    <update id="batchUpdateChannel" parameterType="java.util.List">
+        <foreach collection="channelList" item="channel" separator=";">
+            update tb_channel
+            set
+            channel_code = #{channel.channelCode},
+            sku_id = #{channel.skuId},
+            vm_id = #{channel.vmId},
+            inner_code = #{channel.innerCode},
+            max_capacity = #{channel.maxCapacity},
+            current_capacity = #{channel.currentCapacity},
+            last_supply_time = #{channel.lastSupplyTime},
+            create_time = #{channel.createTime},
+            update_time = #{channel.updateTime}
+            where id = #{channel.id}
+        </foreach>
+    </update>
+
 
     <delete id="deleteChannelById" parameterType="Long">
         delete
