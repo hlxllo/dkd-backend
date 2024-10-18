@@ -2,6 +2,10 @@ package com.dkd.manage.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.dkd.common.constant.DkdContants;
+import com.dkd.manage.domain.VendingMachine;
+import com.dkd.manage.service.IVendingMachineService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +37,9 @@ public class EmpController extends BaseController
 {
     @Autowired
     private IEmpService empService;
+
+    @Autowired
+    private IVendingMachineService vendingMachineService;
 
     /**
      * 查询人员列表列表
@@ -100,5 +107,49 @@ public class EmpController extends BaseController
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(empService.deleteEmpByIds(ids));
+    }
+
+    /**
+     * 根据设备编号获取运营人员列表
+     *
+     * @param innerCode
+     * @return
+     */
+    @PreAuthorize("@ss.hasPermi('manage:emp:list')")
+    @GetMapping("/businessList/{innerCode}")
+    public AjaxResult businessList(@PathVariable("innerCode") String innerCode) {
+        // 查询售货机信息
+        VendingMachine vendingMachine = vendingMachineService.selectVendingMachineByInnerCode(innerCode);
+        if (vendingMachine == null) {
+            return error("设备不存在");
+        }
+        // 根据区域id、角色编号和员工状态查询运营人员列表
+        Emp emp = new Emp();
+        emp.setRegionId(vendingMachine.getRegionId()); // 设备所属区域id
+        emp.setRoleCode(DkdContants.ROLE_CODE_BUSINESS); // 角色编码：运营人员
+        emp.setStatus(DkdContants.EMP_STATUS_NORMAL);
+        return success(empService.selectEmpList(emp));
+    }
+
+    /**
+     * 根据设备编号获取运维人员列表
+     *
+     * @param innerCode
+     * @return
+     */
+    @PreAuthorize("@ss.hasPermi('manage:emp:list')")
+    @GetMapping("/operationList/{innerCode}")
+    public AjaxResult operationList(@PathVariable("innerCode") String innerCode) {
+        // 查询售货机信息
+        VendingMachine vendingMachine = vendingMachineService.selectVendingMachineByInnerCode(innerCode);
+        if (vendingMachine == null) {
+            return error("设备不存在");
+        }
+        // 根据区域id、角色编号和员工状态查询运维人员列表
+        Emp emp = new Emp();
+        emp.setRegionId(vendingMachine.getRegionId()); // 设备所属区域id
+        emp.setRoleCode(DkdContants.ROLE_CODE_OPERATOR); // 角色编码：运维人员
+        emp.setStatus(DkdContants.EMP_STATUS_NORMAL);
+        return success(empService.selectEmpList(emp));
     }
 }

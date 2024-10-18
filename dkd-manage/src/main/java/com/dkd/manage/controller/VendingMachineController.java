@@ -2,6 +2,10 @@ package com.dkd.manage.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.dkd.common.constant.DkdContants;
+import com.dkd.manage.domain.Emp;
+import com.dkd.manage.service.IEmpService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,14 +27,13 @@ import com.dkd.common.core.page.TableDataInfo;
 
 /**
  * 设备管理Controller
- * 
+ *
  * @author hlxllo
  * @date 2024-10-15
  */
 @RestController
 @RequestMapping("/manage/vm")
-public class VendingMachineController extends BaseController
-{
+public class VendingMachineController extends BaseController {
     @Autowired
     private IVendingMachineService vendingMachineService;
 
@@ -39,8 +42,7 @@ public class VendingMachineController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('manage:vm:list')")
     @GetMapping("/list")
-    public TableDataInfo list(VendingMachine vendingMachine)
-    {
+    public TableDataInfo list(VendingMachine vendingMachine) {
         startPage();
         List<VendingMachine> list = vendingMachineService.selectVendingMachineList(vendingMachine);
         return getDataTable(list);
@@ -52,8 +54,7 @@ public class VendingMachineController extends BaseController
     @PreAuthorize("@ss.hasPermi('manage:vm:export')")
     @Log(title = "设备管理", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, VendingMachine vendingMachine)
-    {
+    public void export(HttpServletResponse response, VendingMachine vendingMachine) {
         List<VendingMachine> list = vendingMachineService.selectVendingMachineList(vendingMachine);
         ExcelUtil<VendingMachine> util = new ExcelUtil<VendingMachine>(VendingMachine.class);
         util.exportExcel(response, list, "设备管理数据");
@@ -64,8 +65,7 @@ public class VendingMachineController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('manage:vm:query')")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
-    {
+    public AjaxResult getInfo(@PathVariable("id") Long id) {
         return success(vendingMachineService.selectVendingMachineById(id));
     }
 
@@ -75,8 +75,7 @@ public class VendingMachineController extends BaseController
     @PreAuthorize("@ss.hasPermi('manage:vm:add')")
     @Log(title = "设备管理", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody VendingMachine vendingMachine)
-    {
+    public AjaxResult add(@RequestBody VendingMachine vendingMachine) {
         return toAjax(vendingMachineService.insertVendingMachine(vendingMachine));
     }
 
@@ -86,8 +85,7 @@ public class VendingMachineController extends BaseController
     @PreAuthorize("@ss.hasPermi('manage:vm:edit')")
     @Log(title = "设备管理", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody VendingMachine vendingMachine)
-    {
+    public AjaxResult edit(@RequestBody VendingMachine vendingMachine) {
         return toAjax(vendingMachineService.updateVendingMachine(vendingMachine));
     }
 
@@ -96,9 +94,10 @@ public class VendingMachineController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('manage:vm:remove')")
     @Log(title = "设备管理", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
+    @DeleteMapping("/{ids}")
+    public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(vendingMachineService.deleteVendingMachineByIds(ids));
     }
+
+
 }
