@@ -2,6 +2,7 @@ package com.dkd.manage.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,14 +24,13 @@ import com.dkd.common.core.page.TableDataInfo;
 
 /**
  * 工单详情Controller
- * 
+ *
  * @author hlxllo
  * @date 2024-10-18
  */
 @RestController
 @RequestMapping("/manage/taskDetails")
-public class TaskDetailsController extends BaseController
-{
+public class TaskDetailsController extends BaseController {
     @Autowired
     private ITaskDetailsService taskDetailsService;
 
@@ -39,8 +39,7 @@ public class TaskDetailsController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('manage:taskDetails:list')")
     @GetMapping("/list")
-    public TableDataInfo list(TaskDetails taskDetails)
-    {
+    public TableDataInfo list(TaskDetails taskDetails) {
         startPage();
         List<TaskDetails> list = taskDetailsService.selectTaskDetailsList(taskDetails);
         return getDataTable(list);
@@ -52,8 +51,7 @@ public class TaskDetailsController extends BaseController
     @PreAuthorize("@ss.hasPermi('manage:taskDetails:export')")
     @Log(title = "工单详情", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, TaskDetails taskDetails)
-    {
+    public void export(HttpServletResponse response, TaskDetails taskDetails) {
         List<TaskDetails> list = taskDetailsService.selectTaskDetailsList(taskDetails);
         ExcelUtil<TaskDetails> util = new ExcelUtil<TaskDetails>(TaskDetails.class);
         util.exportExcel(response, list, "工单详情数据");
@@ -64,8 +62,7 @@ public class TaskDetailsController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('manage:taskDetails:query')")
     @GetMapping(value = "/{detailsId}")
-    public AjaxResult getInfo(@PathVariable("detailsId") Long detailsId)
-    {
+    public AjaxResult getInfo(@PathVariable("detailsId") Long detailsId) {
         return success(taskDetailsService.selectTaskDetailsByDetailsId(detailsId));
     }
 
@@ -75,8 +72,7 @@ public class TaskDetailsController extends BaseController
     @PreAuthorize("@ss.hasPermi('manage:taskDetails:add')")
     @Log(title = "工单详情", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody TaskDetails taskDetails)
-    {
+    public AjaxResult add(@RequestBody TaskDetails taskDetails) {
         return toAjax(taskDetailsService.insertTaskDetails(taskDetails));
     }
 
@@ -86,8 +82,7 @@ public class TaskDetailsController extends BaseController
     @PreAuthorize("@ss.hasPermi('manage:taskDetails:edit')")
     @Log(title = "工单详情", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody TaskDetails taskDetails)
-    {
+    public AjaxResult edit(@RequestBody TaskDetails taskDetails) {
         return toAjax(taskDetailsService.updateTaskDetails(taskDetails));
     }
 
@@ -96,9 +91,19 @@ public class TaskDetailsController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('manage:taskDetails:remove')")
     @Log(title = "工单详情", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{detailsIds}")
-    public AjaxResult remove(@PathVariable Long[] detailsIds)
-    {
+    @DeleteMapping("/{detailsIds}")
+    public AjaxResult remove(@PathVariable Long[] detailsIds) {
         return toAjax(taskDetailsService.deleteTaskDetailsByDetailsIds(detailsIds));
+    }
+
+    /**
+     * 查看工单补货详情
+     */
+    @PreAuthorize("@ss.hasPermi('manage:taskDetails:list')")
+    @GetMapping("/byTaskId/{taskId}")
+    public AjaxResult byTaskId(@PathVariable("taskId") Long taskId) {
+        TaskDetails taskDetails = new TaskDetails();
+        taskDetails.setTaskId(taskId);
+        return success(taskDetailsService.selectTaskDetailsList(taskDetails));
     }
 }

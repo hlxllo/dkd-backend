@@ -3,6 +3,7 @@ package com.dkd.manage.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
+import com.dkd.common.constant.DkdContants;
 import com.dkd.manage.domain.dto.TaskDto;
 import com.dkd.manage.domain.vo.TaskVo;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -98,5 +99,15 @@ public class TaskController extends BaseController {
     @DeleteMapping("/{taskIds}")
     public AjaxResult remove(@PathVariable Long[] taskIds) {
         return toAjax(taskService.deleteTaskByTaskIds(taskIds));
+    }
+
+    /**
+     * 取消工单
+     */
+    @PreAuthorize("@ss.hasPermi('manage:task:edit')")
+    @Log(title = "工单", businessType = BusinessType.UPDATE)
+    @PutMapping("/cancel")
+    public AjaxResult cancel(@RequestBody Task task) {
+        return toAjax(taskService.cancelTask(task));
     }
 }
