@@ -136,8 +136,8 @@ dromara:
     aliyun-oss:
       - platform: aliyun-oss-1 # 存储平台标识
         enable-storage: true  # 启用存储
-        access-key: LTAI5tCaX4QuuiyP6Q8kmA7U
-        secret-key: lBWl3W5Kg2dqfnlm76DBNDMhRC0sQS
+        access-key: ${OSS_ACCESS_KEY_ID}
+        secret-key: ${OSS_ACCESS_KEY_SECRET}
         end-point: oss-cn-hangzhou.aliyuncs.com
         bucket-name: web-tlias-sa
         domain: https://web-tlias-sa.oss-cn-hangzhou.aliyuncs.com/ # 访问域名，注意“/”结尾，例如：https://abc.oss-cn-shanghai.aliyuncs.com/
